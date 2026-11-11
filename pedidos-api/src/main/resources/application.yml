@@ -1,0 +1,44 @@
+# ─────────────────────────────────────────────────────────────
+#  API de pedidos FICTICIA · laboratorio del vídeo #1
+#  Los tres "errores" de la demo se cambian aquí o en SQL:
+#    E1  índice en pedidos.codigo  → db/02-crear-indice.sql
+#    E2  lab.envios.timeout-ms     → 0 = sin timeout · 300 = arreglado
+#    E3  spring.cache.type         → none = sin caché · caffeine = arreglado
+# ─────────────────────────────────────────────────────────────
+
+server:
+  port: 8080
+  tomcat:
+    mbeanregistry:
+      enabled: true          # necesario para ver tomcat.threads.busy en el Actuator
+    # threads.max por defecto = 200 (no lo tocamos: es parte de la demo)
+
+spring:
+  application:
+    name: pedidos-api
+  threads:
+    virtual:
+      enabled: false         # hilos de plataforma "de toda la vida" (los hilos virtuales cambiarían la demo E2)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pedidos
+    username: lab
+    password: lab
+    # hikari.maximum-pool-size por defecto = 10 (no lo tocamos: es parte de la demo)
+  cache:
+    type: none               # E3 · cámbialo a "caffeine" para arreglarlo
+    caffeine:
+      spec: maximumSize=10,expireAfterWrite=10m
+
+lab:
+  envios:
+    url: http://localhost:8081
+    timeout-ms: 0            # E2 · cámbialo a 300 para arreglarlo
+
+management:
+  server:
+    port: 9090               # el Actuator en otro puerto, con sus propios hilos:
+                             # así se puede mirar aunque la API esté saturada
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics

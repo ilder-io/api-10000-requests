@@ -1,0 +1,24 @@
+# PostgreSQL del laboratorio, con poca memoria para que quepa en una PC de 8 GB.
+# La primera vez crea las tablas y genera 1 000 000 de pedidos ficticios (tarda 1 o 2 minutos).
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: lab-pedidos-db
+    environment:
+      POSTGRES_DB: pedidos
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab
+    ports:
+      - "5432:5432"
+    command: >
+      postgres
+        -c shared_buffers=128MB
+        -c max_connections=60
+        -c work_mem=4MB
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - lab-pedidos-data:/var/lib/postgresql/data
+    mem_limit: 768m
+
+volumes:
+  lab-pedidos-data:

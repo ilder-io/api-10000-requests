@@ -1,0 +1,8 @@
+# Por si publicas el laboratorio en GitHub
+target/
+datos-postgres/
+herramientas/k6.exe
+*.log
+
+# Notas privadas del ensayo (cifras y avisos para Ilder)
+ENSAYO.md
